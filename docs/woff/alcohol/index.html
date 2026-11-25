@@ -87,9 +87,10 @@
 const params = new URLSearchParams(location.search);
 const WOFF_ID = params.get('woffId');
 const API_URL = params.get('api');
-// PC のブラウザで開くときに使う scope。Client App の OAuth Scopes に入っているものだけを書く
-// (入っていないものを書くと「使用できない Scope が含まれています」になる)。/users/me には user.read が要る
-const SCOPE = 'user.read';
+// PC のブラウザで開くときに使う scope。WOFF の入り口が openid を求めるので、
+// Client App の OAuth Scopes に openid と user.read (/users/me に要る) を入れておくこと
+// (入っていないと「使用できない Scope が含まれています」になる)
+const SCOPE = 'openid user.read';
 
 const $ = id => document.getElementById(id);
 $('today').textContent = new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
