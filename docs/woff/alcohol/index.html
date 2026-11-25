@@ -92,6 +92,12 @@ const API_URL = params.get('api');
 // (入っていないと「使用できない Scope が含まれています」になる)
 const SCOPE = 'openid user.read';
 
+// ログインの戻り先は、登録した Endpoint URL と同じにする (ログイン後に付く code・state は外す)
+const back = new URLSearchParams(location.search);
+back.delete('code');
+back.delete('state');
+const REDIRECT_URI = location.origin + location.pathname + '?' + back.toString();
+
 const $ = id => document.getElementById(id);
 $('today').textContent = new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'short' });
 
@@ -106,8 +112,8 @@ function showError(text) {
 async function start() {
   if (!WOFF_ID || !API_URL) return showError('URL に woffId と api がありません。WOFF の Endpoint URL の設定を確かめてください。');
   try {
-    await woff.init({ woffId: WOFF_ID, scope: SCOPE, redirectUri: location.href });
-    if (!woff.isLoggedIn()) { woff.login({ scope: SCOPE, redirectUri: location.href }); return; }
+    await woff.init({ woffId: WOFF_ID, scope: SCOPE, redirectUri: REDIRECT_URI });
+    if (!woff.isLoggedIn()) { woff.login({ scope: SCOPE, redirectUri: REDIRECT_URI }); return; }
     const p = await woff.getProfile();
     $('name').textContent = p.displayName;
     if (p.pictureUrl) $('avatar').src = p.pictureUrl;
